@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import allUrl from "../../app/url.config.json"
+import axios from "axios";
+const url = allUrl.url
 
 export default function LoginPage() {
     const router = useRouter();
@@ -39,13 +42,19 @@ export default function LoginPage() {
 
         setLoading(true);
         try {
-            await new Promise((r) => setTimeout(r, 700));
-
-            // Auth cookie for protected routes
-            document.cookie = "token=demo-token; path=/; max-age=86400";
-            document.cookie = `user-email=${email}; path=/; max-age=86400`;
-
-            router.replace("/products");
+            const body = {
+                email: email,
+                password: password
+            }
+            axios
+                .post(url + "/user/login", body)
+                .then((res) => {
+                    console.log("res", res.data)
+                    router.replace("/dashboard");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         } catch {
             setError("Login failed. Please try again.");
         } finally {
@@ -53,14 +62,6 @@ export default function LoginPage() {
         }
     };
 
-    const handleSocialLogin = (provider: string) => {
-        setLoading(true);
-        // Simulate social login
-        setTimeout(() => {
-            document.cookie = "token=demo-token-social; path=/; max-age=86400";
-            router.replace("/products");
-        }, 800);
-    };
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 via-slate-50 to-gray-50 px-4 py-8">
@@ -200,7 +201,6 @@ export default function LoginPage() {
                             </label>
                         </div>
 
-                        {/* Sign In Button */}
                         <button
                             type="submit"
                             disabled={loading}
