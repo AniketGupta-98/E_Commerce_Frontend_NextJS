@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const protectedRoutes = ["/dashboard", "/cart", "/checkout"];
+
 export function proxy(request: NextRequest) {
-    const token = request.cookies.get("accessToken")?.value;
-    console.log("token", token)
+    const token = request.cookies.get("token")?.value;
+    const path = request.nextUrl.pathname;
 
-    const isAuthRoute = request.nextUrl.pathname.startsWith("/login");
+    const isProtected = protectedRoutes.some(route =>
+        path.startsWith(route)
+    );
 
-    if (!token && !isAuthRoute) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    if (token && isAuthRoute) {
-        return NextResponse.redirect(new URL("/", request.url));
+    if (isProtected && !token) {
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
     return NextResponse.next();
@@ -20,7 +20,5 @@ export function proxy(request: NextRequest) {
 
 
 export const config = {
-    matcher: [
-        // "/((?!_next|favicon.ico|api).*)",
-    ],
+    matcher: ["/dashboard/:path*", "/cart/:path*", "/checkout/:path*"],
 };

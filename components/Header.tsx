@@ -2,7 +2,16 @@
 
 import { AppBar, Toolbar, IconButton, Avatar, Button } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useRouter } from "next/navigation";
+
 export default function Header() {
+    const router = useRouter();
+
+    const handleLogout = () => {
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        router.replace("/login");
+    };
+
     return (
         <AppBar
             position="static"
@@ -19,6 +28,7 @@ export default function Header() {
                         variant="outlined"
                         startIcon={<LogoutIcon />}
                         size="small"
+                        onClick={handleLogout}
                     >
                         Logout
                     </Button>
