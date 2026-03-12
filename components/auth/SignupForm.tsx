@@ -45,8 +45,8 @@ export default function SignupForm() {
         setLoading(true);
         try {
             const body = {
-                firstName: firstName,
-                lastName: lastName,
+                Fname: firstName,
+                Lname: lastName,
                 email: email,
                 password: password
             };
