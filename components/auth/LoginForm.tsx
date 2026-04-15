@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from 'react-redux';
+import { setAccessToken, clearAccessToken } from '../../lib/features/Auth/authSlice';
 import Link from "next/link";
 import allUrl from "../../app/url.config.json"
 import axios from "axios";
 const url = allUrl.url
 
 export default function LoginPage() {
+    const dispatch = useDispatch();
     const router = useRouter();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -47,11 +49,11 @@ export default function LoginPage() {
                 password: password
             }
             axios
-                .post(url + "/user/login", body)
+                .post(url + "/auth/login", body)
                 .then((res) => {
-                    console.log("res", res.data);
-                    // Add expiration for the cookie if you want, e.g. Max-Age
-                    document.cookie = `token=${res.data.token || "mock_token"}; path=/;`;
+                    const token = res.data.accessToken
+                    dispatch(setAccessToken(token));
+                    // document.cookie = `token=${token}; path=/;`;
                     router.replace("/dashboard");
                 })
                 .catch((error) => {

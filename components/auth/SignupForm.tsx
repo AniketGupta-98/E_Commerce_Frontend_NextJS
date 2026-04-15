@@ -50,7 +50,7 @@ export default function SignupForm() {
                 email: email,
                 password: password
             };
-            const res = await axios.post(url + "/user/create", body);
+            const res = await axios.post(url + "/auth/register", body);
             console.log("res", res.data);
             router.push("/login");
         } catch (error: any) {
