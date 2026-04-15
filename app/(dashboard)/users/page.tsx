@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Search, FilterList, MoreVert, PersonAdd } from '@mui/icons-material';
 import { IconButton, Button } from '@mui/material';
 import allUrl from "../../url.config.json"
@@ -35,6 +36,7 @@ const getStatusBadge = (status: string) => {
 
 export default function UsersPage() {
 
+    const token = useSelector((state) => state.auth.accessToken);
 
     // const [usersData, setusersData] = useState([]);
 
