@@ -36,7 +36,9 @@ const getStatusBadge = (status: string) => {
 
 export default function UsersPage() {
 
-    const token = useSelector((state) => state.auth.accessToken);
+    const token = useSelector((state) => state);
+
+    console.log("token",token)
 
     // const [usersData, setusersData] = useState([]);
 

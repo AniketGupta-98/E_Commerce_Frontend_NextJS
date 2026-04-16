@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from 'react-redux';
-import { setAccessToken, clearAccessToken } from '../../lib/features/Auth/authSlice';
+import { currentUser, clearAccessToken } from '../../lib/features/Auth/authSlice';
 import Link from "next/link";
 import allUrl from "../../app/url.config.json"
 import axios from "axios";
@@ -51,10 +51,14 @@ export default function LoginPage() {
             axios
                 .post(url + "/auth/login", body)
                 .then((res) => {
+                    const user = res.data;
+                    console.log("user", user)
                     const token = res.data.accessToken
-                    dispatch(setAccessToken(token));
-                    // document.cookie = `token=${token}; path=/;`;
+                    dispatch(currentUser(user));
+                    document.cookie = `token=${token}; path=/;`;
                     router.replace("/dashboard");
+                    user.accessToken = `Bearer ${user.accessToken}`
+                    localStorage.setItem("user", JSON.stringify(user))
                 })
                 .catch((error) => {
                     console.log(error);

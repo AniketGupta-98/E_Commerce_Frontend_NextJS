@@ -51,7 +51,6 @@ export default function SignupForm() {
                 password: password
             };
             const res = await axios.post(url + "/auth/register", body);
-            console.log("res", res.data);
             router.push("/login");
         } catch (error: any) {
             console.log(error);

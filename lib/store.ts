@@ -3,7 +3,7 @@ import counterReducer from "./features/Auth/authSlice";
 
 export const store = configureStore({
     reducer: {
-        counter: counterReducer,
+        user: counterReducer,
     },
 });
 export type RootState = ReturnType<typeof store.getState>;
