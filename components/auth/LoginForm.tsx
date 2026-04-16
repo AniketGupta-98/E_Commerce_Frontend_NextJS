@@ -52,13 +52,14 @@ export default function LoginPage() {
                 .post(url + "/auth/login", body)
                 .then((res) => {
                     const user = res.data;
-                    console.log("user", user)
-                    const token = res.data.accessToken
-                    dispatch(currentUser(user));
-                    document.cookie = `token=${token}; path=/;`;
+                    const updatedUser = {
+                        ...user,
+                        accessToken: `Bearer ${user.accessToken}`,
+                    };
+                    dispatch(currentUser(updatedUser));
+                    // document.cookie = `token=${token}; path=/;`;
                     router.replace("/dashboard");
-                    user.accessToken = `Bearer ${user.accessToken}`
-                    localStorage.setItem("user", JSON.stringify(user))
+                    localStorage.setItem("user", JSON.stringify(updatedUser))
                 })
                 .catch((error) => {
                     console.log(error);
