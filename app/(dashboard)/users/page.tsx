@@ -3,18 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Search, FilterList, MoreVert, PersonAdd } from '@mui/icons-material';
-import { IconButton, Button } from '@mui/material';
+import { IconButton, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination } from '@mui/material';
 import allUrl from "../../url.config.json"
 import axios from "axios";
 const url = allUrl.url
+import { format } from 'date-fns';
 
-const usersData = [
-    { id: 'USR-081', name: 'Alice Freeman', email: 'alice.freeman@example.com', role: 'Admin', registered: 'Jan 12, 2023', status: 'Active', color: 'bg-indigo-500' },
-    { id: 'USR-082', name: 'Bob Smith', email: 'bob.smith@example.com', role: 'Customer', registered: 'Feb 24, 2023', status: 'Active', color: 'bg-emerald-500' },
-    { id: 'USR-083', name: 'Charlie Davis', email: 'charlie.d@example.com', role: 'Customer', registered: 'Mar 05, 2023', status: 'Inactive', color: 'bg-sky-500' },
-    { id: 'USR-084', name: 'Diana Prince', email: 'diana.p@example.com', role: 'Manager', registered: 'Apr 18, 2023', status: 'Active', color: 'bg-rose-500' },
-    { id: 'USR-085', name: 'Evan Wright', email: 'evan.w@example.com', role: 'Customer', registered: 'May 02, 2023', status: 'Banned', color: 'bg-amber-500' },
-];
 
 const getRoleBadge = (role: string) => {
     switch (role) {
@@ -24,30 +18,50 @@ const getRoleBadge = (role: string) => {
     }
 };
 
-const getStatusBadge = (status: string) => {
+const getStatusBadge = (status: boolean) => {
     switch (status) {
-        case 'Active': return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
-        case 'Inactive': return 'bg-slate-100 text-slate-600 border border-slate-200';
-        case 'Banned': return 'bg-rose-50 text-rose-700 border border-rose-200';
+        case status == true: return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+        case status == false: return 'bg-slate-100 text-slate-600 border border-slate-200';
         default: return 'bg-slate-50 text-slate-700 border border-slate-200';
     }
 };
 
+const color = ["bg-amber-500", "bg-rose-500", "bg-emerald-500", "bg-sky-500", "bg-indigo-500", "bg-slate-500"]
 
 export default function UsersPage() {
 
-    const token = useSelector((state) => state);
+    const user = useSelector((state) => state.user.user);
+    const headerConfig = {
+        headers: { Authorization: user.accessToken },
+    };
 
-    console.log("token",token)
+    const [usersData, setusersData] = useState([{
+        Fname: "",
+        Lname: "",
+        email: "",
+        isActive: false,
+        role: "",
+        createdAt: "",
+    }]);
 
-    // const [usersData, setusersData] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     useEffect(() => {
         try {
             axios
-                .get(url + "/users",)
+                .get(url + "/users", headerConfig)
                 .then((res) => {
-                    console.log("res", res.data);
+                    setusersData(res.data.user)
                 })
                 .catch((error) => {
                     console.log(error);
@@ -99,64 +113,75 @@ export default function UsersPage() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse min-w-[800px]">
-                        <thead>
-                            <tr className="bg-slate-50/50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-semibold">
-                                <th className="p-4 pl-6">User Profile</th>
-                                <th className="p-4">System Role</th>
-                                <th className="p-4">Reg. Date</th>
-                                <th className="p-4">Account Status</th>
-                                <th className="p-4 text-right pr-6">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 text-sm">
-                            {usersData.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/70 transition-colors group cursor-pointer">
-                                    <td className="p-4 pl-6">
+                <TableContainer className="overflow-x-auto">
+                    <Table className="w-full text-left border-collapse min-w-[800px]">
+                        <TableHead>
+                            <TableRow className="bg-slate-50/50 border-b border-slate-200">
+                                <TableCell className="p-4 pl-6 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">User Profile</TableCell>
+                                <TableCell className="p-4 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">System Role</TableCell>
+                                <TableCell className="p-4 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Reg. Date</TableCell>
+                                <TableCell className="p-4 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Account Status</TableCell>
+                                <TableCell className="p-4 text-right pr-6 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Actions</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody className="divide-y divide-slate-100 text-sm">
+                            {(rowsPerPage > 0
+                                ? usersData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : usersData
+                            ).map((user, id) => (
+                                <TableRow key={id} className="hover:bg-slate-50/70 transition-colors group cursor-pointer border-b-0">
+                                    <TableCell className="p-4 pl-6 border-b-0">
                                         <div className="flex items-center gap-4">
-                                            <div className={`w-11 h-11 rounded-full flex justify-center items-center text-white font-bold text-sm shadow-sm ring-2 ring-white ${user.color}`}>
-                                                {user.name.split(' ').map(n => n[0]).join('')}
+                                            <div className={`w-11 h-11 rounded-full flex justify-center items-center text-white font-bold text-sm shadow-sm ring-2 ring-white ${color[id % color.length]}`}>
+                                                {user.Fname && user.Lname ? user.Fname[0] + user.Lname[0] : ""}
                                             </div>
                                             <div>
-                                                <div className="font-semibold text-slate-900 text-base">{user.name}</div>
+                                                <div className="font-semibold text-slate-900 text-base">{user.Fname && user.Lname ? user.Fname + " " + user.Lname : ""}</div>
                                                 <div className="text-xs text-slate-500 font-medium">{user.email}</div>
                                             </div>
                                         </div>
-                                    </td>
-                                    <td className="p-4">
-                                        <span className={`px-2.5 py-1 rounded-full border text-xs font-semibold shadow-sm inline-block ${getRoleBadge(user.role)}`}>
-                                            {user.role}
+                                    </TableCell>
+                                    <TableCell className="p-4 border-b-0">
+                                        {user.role && (
+                                            <span className={`px-2.5 py-1 rounded-full border text-xs font-semibold shadow-sm inline-block ${getRoleBadge(user.role)}`}>
+                                                {user.role}
+                                            </span>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="p-4 text-slate-600 font-medium border-b-0">{user?.createdAt
+                                        ? format(new Date(user.createdAt), 'dd MMM yyyy, hh:mm a')
+                                        : '—'}
+                                    </TableCell>
+                                    <TableCell className="p-4 border-b-0">
+                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center w-fit gap-1.5 ${getStatusBadge(user.isActive)}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${user.isActive === true ? 'bg-emerald-500' : user.isActive === false ? 'bg-rose-500' : 'bg-slate-400'}`}></span>
+                                            {user.isActive ? "Active" : "Inactive"}
                                         </span>
-                                    </td>
-                                    <td className="p-4 text-slate-600 font-medium">{user.registered}</td>
-                                    <td className="p-4">
-                                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold flex items-center w-fit gap-1.5 ${getStatusBadge(user.status)}`}>
-                                            <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'Active' ? 'bg-emerald-500' : user.status === 'Banned' ? 'bg-rose-500' : 'bg-slate-400'}`}></span>
-                                            {user.status}
-                                        </span>
-                                    </td>
-                                    <td className="p-4 text-right pr-6">
+                                    </TableCell>
+                                    <TableCell className="p-4 text-right pr-6 border-b-0">
                                         <Button size="small" variant="text" className="text-indigo-600 font-semibold hover:bg-indigo-50 normal-case opacity-0 group-hover:opacity-100 transition-opacity mr-2">
                                             Manage
                                         </Button>
                                         <IconButton size="small" className="text-slate-400 hover:text-slate-600">
                                             <MoreVert fontSize="small" />
                                         </IconButton>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             ))}
-                        </tbody>
-                    </table>
-                </div>
+                        </TableBody>
+                    </Table>
+                </TableContainer>
 
-                <div className="p-4 border-t border-slate-200 flex items-center justify-between text-sm text-slate-500 bg-slate-50/50">
-                    <div>Showing <span className="font-medium text-slate-700">1</span> to <span className="font-medium text-slate-700">5</span> of <span className="font-medium text-slate-700">892</span> users</div>
-                    <div className="flex gap-2">
-                        <button className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 font-medium hover:bg-slate-50 disabled:opacity-50 transition-colors shadow-sm" disabled>Previous</button>
-                        <button className="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 font-medium hover:bg-slate-50 transition-colors shadow-sm">Next</button>
-                    </div>
-                </div>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25, 50]}
+                    component="div"
+                    count={usersData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    className="border-t border-slate-200 bg-slate-50/50"
+                />
             </div>
         </div>
     );

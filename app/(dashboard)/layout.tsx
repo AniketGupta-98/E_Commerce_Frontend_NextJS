@@ -15,6 +15,7 @@ export default function DashboardLayout({
     const dispatch = useDispatch();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     useEffect(() => {
         const storeUser = localStorage.getItem("user");
@@ -37,11 +38,11 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex min-h-screen">
-            <Sidebar />
+        <div className="flex min-h-screen relative overflow-hidden">
+            <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="flex flex-col flex-1 min-w-0 bg-slate-50">
-                <Header />
+            <div className="flex flex-col flex-1 min-w-0 bg-slate-50 transition-all duration-300">
+                <Header onMenuClick={() => setSidebarOpen((prev) => !prev)} />
                 <main className="p-6 sm:p-8 flex-1 overflow-auto">
                     <div className="mx-auto max-w-7xl">
                         {children}

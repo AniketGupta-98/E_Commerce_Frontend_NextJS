@@ -18,14 +18,23 @@ const menuItems = [
     { label: "Users", href: "/users", icon: <People fontSize="small" /> },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+    open: boolean;
+    onClose: () => void;
+}
+
+export default function Sidebar({ open, onClose }: SidebarProps) {
     const pathname = usePathname();
 
     return (
         <Drawer
-            variant="permanent"
+            variant="persistent"
+            open={open}
+            onClose={onClose}
             sx={{
-                width: drawerWidth,
+                width: open ? drawerWidth : 0,
+                flexShrink: 0,
+                transition: 'width 0.225s cubic-bezier(0.4, 0, 0.6, 1)',
                 [`& .MuiDrawer-paper`]: {
                     width: drawerWidth,
                     boxSizing: "border-box",

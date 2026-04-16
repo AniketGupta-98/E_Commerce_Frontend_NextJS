@@ -4,11 +4,16 @@ import { AppBar, Toolbar, IconButton, Avatar, Button, InputBase } from "@mui/mat
 import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from 'react-redux';
 import { currentUser, clearAccessToken } from '../lib/features/Auth/authSlice';
 
-export default function Header() {
+interface HeaderProps {
+    onMenuClick: () => void;
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
     const dispatch = useDispatch();
     const router = useRouter();
 
@@ -23,9 +28,21 @@ export default function Header() {
         <AppBar
             position="sticky"
             elevation={0}
+            color="transparent"
+            sx={{ backgroundColor: 'white' }}
             className="bg-white border-b border-slate-200 z-10"
         >
             <Toolbar className="flex justify-between items-center h-16 min-h-[64px] px-6 mui-toolbar-override">
+                <div className="flex items-center">
+                    <IconButton 
+                        onClick={onMenuClick} 
+                        edge="start" 
+                        size="medium"
+                        className="mr-3 text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition-colors"
+                        aria-label="menu"
+                    >
+                        <MenuIcon />
+                    </IconButton>
 
                 {/* Search Bar - Amazon/Flipkart inspired */}
                 <div className="flex bg-slate-100 rounded-lg overflow-hidden items-center px-4 py-2 max-w-md w-full border border-transparent focus-within:border-indigo-400 focus-within:bg-white focus-within:shadow-sm focus-within:ring-2 focus-within:ring-indigo-100 transition-all mr-6">
@@ -35,6 +52,7 @@ export default function Header() {
                         className="w-full text-sm text-slate-700"
                         inputProps={{ 'aria-label': 'search' }}
                     />
+                </div>
                 </div>
 
                 <div className="flex items-center gap-5 ml-auto">
