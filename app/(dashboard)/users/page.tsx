@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Search, FilterList, MoreVert, PersonAdd } from '@mui/icons-material';
 import { IconButton, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination } from '@mui/material';
 import allUrl from "../../url.config.json"
 import axios from "axios";
 const url = allUrl.url
 import { format } from 'date-fns';
+import { useAppSelector } from "@/lib/useAppselector";
 
 
 const getRoleBadge = (role: string) => {
@@ -30,9 +30,10 @@ const color = ["bg-amber-500", "bg-rose-500", "bg-emerald-500", "bg-sky-500", "b
 
 export default function UsersPage() {
 
-    const user = useSelector((state) => state.user.user);
+    const user = useAppSelector((state) => state.user.user);
+
     const headerConfig = {
-        headers: { Authorization: user.accessToken },
+        headers: { Authorization: user?.accessToken },
     };
 
     const [usersData, setusersData] = useState([{

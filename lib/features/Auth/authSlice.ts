@@ -1,11 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface CounterState {
-    user: string | null;
-}
+type User = {
+  accessToken: string;
+  name?: string;
+};
+
+type CounterState = {
+  user: User | null;
+};
 
 const initialState: CounterState = {
     user: null,
+    
 };
 
 const counterSlice = createSlice({
