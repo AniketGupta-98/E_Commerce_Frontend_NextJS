@@ -55,11 +55,11 @@ export default function RevenueChart() {
                             tick={{ fill: '#6b7280', fontSize: 13 }}
                             tickFormatter={(value) => `$${value/1000}k`}
                         />
-                        <Tooltip 
+                        {/* <Tooltip 
                             contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                             formatter={(value: number) => [`$${value}`, 'Revenue']}
                             labelStyle={{ color: '#374151', fontWeight: 600, marginBottom: '4px' }}
-                        />
+                        /> */}
                         <Area 
                             type="monotone" 
                             dataKey="revenue" 
