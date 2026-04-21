@@ -49,7 +49,7 @@ export default function LoginPage() {
                 password: password
             }
             axios
-                .post(url + "/auth/login", body)
+                .post(url + "/admin/login", body)
                 .then((res) => {
                     const user = res.data;
                     const updatedUser = {
