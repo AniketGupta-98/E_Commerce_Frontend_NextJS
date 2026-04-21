@@ -7,7 +7,7 @@ import {
     ListItem, ListItemButton,
     ListItemText, Toolbar,
 } from "@mui/material";
-import { Dashboard, ShoppingCart, Inventory, People, Storefront } from "@mui/icons-material";
+import { Dashboard, ShoppingCart, Inventory, People, Storefront, AddBox } from "@mui/icons-material";
 
 const drawerWidth = 260;
 
@@ -15,6 +15,7 @@ const menuItems = [
     { label: "Dashboard", href: "/dashboard", icon: <Dashboard fontSize="small" /> },
     { label: "Orders", href: "/orders", icon: <ShoppingCart fontSize="small" /> },
     { label: "Products", href: "/products", icon: <Inventory fontSize="small" /> },
+    { label: "Add Product", href: "/products/add", icon: <AddBox fontSize="small" /> },
     { label: "Users", href: "/users", icon: <People fontSize="small" /> },
 ];
 

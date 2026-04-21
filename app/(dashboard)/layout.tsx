@@ -38,10 +38,10 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="flex min-h-screen relative overflow-hidden">
+        <div className="flex h-screen relative overflow-hidden">
             <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            <div className="flex flex-col flex-1 min-w-0 bg-slate-50 transition-all duration-300">
+            <div className="flex flex-col flex-1 min-w-0 bg-slate-50 transition-all duration-300 h-full">
                 <Header onMenuClick={() => setSidebarOpen((prev) => !prev)} />
                 <main className="p-6 sm:p-8 flex-1 overflow-auto">
                     <div className="mx-auto max-w-7xl">
