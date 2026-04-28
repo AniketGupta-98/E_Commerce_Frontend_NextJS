@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import allUrl from '../../url.config.json';
-import { useAppSelector } from '@/lib/useAppselector';
+import React, { useState } from 'react';
+import {
+    useCategories,
+    useCreateCategory,
+    useUpdateCategory,
+    useDeleteCategory,
+} from '@/lib/hooks/useCategories';
 
 import CategoryPageHeader from '@/components/dashboard/category/CategoryPageHeader';
 import CategorySearchFilter from '@/components/dashboard/category/CategorySearchFilter';
@@ -13,36 +16,18 @@ import EditCategoryDialog from '@/components/dashboard/category/EditCategoryDial
 
 import {
     Dialog, DialogTitle, DialogContent, DialogContentText,
-    DialogActions, Button, Snackbar, Alert,
+    DialogActions, Button, Snackbar, Alert, CircularProgress,
 } from '@mui/material';
 import { WarningAmberRounded } from '@mui/icons-material';
-
-const url = allUrl.url;
 
 const EMPTY_ADD = { name: '', description: '' };
 
 export default function CategoryPage() {
-    const user = useAppSelector((state) => state.user.user);
-    const headerConfig = { headers: { Authorization: user?.accessToken } };
-
-    // ── Data ────────────────────────────────────────────────────────────────
-    const [categories, setCategories] = useState<any[]>([]);
-
-    useEffect(() => {
-        fetchCategories();
-    }, []);
-
-    const fetchCategories = () => {
-        try {
-            axios
-                .get(url + '/all/category', headerConfig)
-                .then((res) => {
-                    const data = res.data.data;
-                    setCategories(Array.isArray(data) ? data : []);
-                })
-                .catch((err) => console.log(err));
-        } catch { /* silent */ }
-    };
+    // ── TanStack Query ───────────────────────────────────────────────────────
+    const { data: categories = [], isLoading } = useCategories();
+    const createCategory  = useCreateCategory();
+    const updateCategory  = useUpdateCategory();
+    const deleteCategory  = useDeleteCategory();
 
     // ── Pagination ───────────────────────────────────────────────────────────
     const [page, setPage] = useState(0);
@@ -57,8 +42,8 @@ export default function CategoryPage() {
     };
 
     const filteredCategories = categories.filter((cat) => {
-        const name = (cat.name).toLowerCase();
-        const desc = (cat.description || '').toLowerCase();
+        const name = (cat.name ?? '').toLowerCase();
+        const desc = (cat.description ?? '').toLowerCase();
         const q = searchQuery.toLowerCase();
         return name.includes(q) || desc.includes(q);
     });
@@ -67,97 +52,71 @@ export default function CategoryPage() {
     const [addOpen, setAddOpen] = useState(false);
     const [addData, setAddData] = useState(EMPTY_ADD);
 
-    const handleAddClick = () => {
-        setAddData(EMPTY_ADD);
-        setAddOpen(true);
-    };
+    const handleAddClick = () => { setAddData(EMPTY_ADD); setAddOpen(true); };
 
     const handleAddSubmit = () => {
-        try {
-            axios
-                .post(url + '/category', addData, headerConfig)
-                .then(() => {
-                    setAddOpen(false);
-                    fetchCategories();
-                    setSnackbar({ open: true, message: `Category "${addData.name}" created successfully.`, severity: 'success' });
-                })
-                .catch((err) => {
-                    const msg = err?.response?.status === 409
-                        ? 'A category with that name already exists.'
-                        : 'Failed to create category. Please try again.';
-                    setSnackbar({ open: true, message: msg, severity: 'error' });
-                });
-        } catch { /* silent */ }
+        createCategory.mutate(addData, {
+            onSuccess: () => {
+                setAddOpen(false);
+                setSnackbar({ open: true, message: `Category "${addData.name}" created successfully.`, severity: 'success' });
+            },
+            onError: (err: any) => {
+                const msg = err?.response?.status === 409
+                    ? 'A category with that name already exists.'
+                    : 'Failed to create category. Please try again.';
+                setSnackbar({ open: true, message: msg, severity: 'error' });
+            },
+        });
     };
 
     // ── Edit Dialog ──────────────────────────────────────────────────────────
     const [editOpen, setEditOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState<any>(null);
 
-    const handleEditClick = (cat: any) => {
-        setSelectedCategory({ ...cat });
-        setEditOpen(true);
-    };
-
-    const handleEditClose = () => {
-        setEditOpen(false);
-        setSelectedCategory(null);
-    };
+    const handleEditClick = (cat: any) => { setSelectedCategory({ ...cat }); setEditOpen(true); };
+    const handleEditClose = () => { setEditOpen(false); setSelectedCategory(null); };
 
     const handleEditSave = () => {
-        try {
-            const id = selectedCategory.categoryId ?? selectedCategory.id;
-            const body = {
-                name: selectedCategory.name ?? selectedCategory.categoryName,
-                description: selectedCategory.description,
-            };
-            axios
-                .put(url + `/category/${id}`, body, headerConfig)
-                .then(() => {
-                    fetchCategories();
-                    setSnackbar({ open: true, message: 'Category updated successfully.', severity: 'success' });
-                    setEditOpen(false);
-                })
-                .catch(() => {
-                    setSnackbar({ open: true, message: 'Failed to update category. Please try again.', severity: 'error' });
-                });
-        } catch { /* silent */ }
+        const id = selectedCategory.categoryId ?? selectedCategory.id ?? selectedCategory._id;
+        const payload = {
+            name: selectedCategory.name ?? selectedCategory.categoryName,
+            description: selectedCategory.description,
+        };
+        updateCategory.mutate({ id, payload }, {
+            onSuccess: () => {
+                setEditOpen(false);
+                setSnackbar({ open: true, message: 'Category updated successfully.', severity: 'success' });
+            },
+            onError: () => {
+                setSnackbar({ open: true, message: 'Failed to update category. Please try again.', severity: 'error' });
+            },
+        });
     };
 
     // ── Delete Dialog ────────────────────────────────────────────────────────
     const [deleteOpen, setDeleteOpen] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
 
-    const handleDeleteClick = (cat: any) => {
-        setCategoryToDelete(cat);
-        setDeleteOpen(true);
-    };
-
-    const handleDeleteCancel = () => {
-        setDeleteOpen(false);
-        setCategoryToDelete(null);
-    };
+    const handleDeleteClick = (cat: any) => { setCategoryToDelete(cat); setDeleteOpen(true); };
+    const handleDeleteCancel = () => { setDeleteOpen(false); setCategoryToDelete(null); };
 
     const handleDeleteConfirm = () => {
+        const id = categoryToDelete?.categoryId ?? categoryToDelete?.id ?? categoryToDelete?._id;
         setDeleteOpen(false);
-        try {
-            const id = categoryToDelete?.categoryId ?? categoryToDelete?.id;
-            axios
-                .delete(`${url}/category/${id}`, headerConfig)
-                .then(() => {
-                    fetchCategories();
-                    setSnackbar({
-                        open: true,
-                        message: `"${categoryToDelete?.name ?? categoryToDelete?.categoryName}" deleted successfully.`,
-                        severity: 'success',
-                    });
-                    setCategoryToDelete(null);
-                })
-                .catch(() => {
-                    setSnackbar({ open: true, message: 'Failed to delete category. Please try again.', severity: 'error' });
-                    setCategoryToDelete(null);
+        deleteCategory.mutate(id, {
+            onSuccess: () => {
+                setSnackbar({
+                    open: true,
+                    message: `"${categoryToDelete?.name ?? categoryToDelete?.categoryName}" deleted successfully.`,
+                    severity: 'success',
                 });
-        } catch { /* silent */ }
+                setCategoryToDelete(null);
+            },
+            onError: () => {
+                setSnackbar({ open: true, message: 'Failed to delete category. Please try again.', severity: 'error' });
+                setCategoryToDelete(null);
+            },
+        });
     };
 
     // ── Snackbar ─────────────────────────────────────────────────────────────
@@ -182,16 +141,22 @@ export default function CategoryPage() {
                     onSearchChange={handleSearchChange}
                 />
 
-                {/* Table */}
-                <CategoryTable
-                    filteredCategories={filteredCategories}
-                    page={page}
-                    rowsPerPage={rowsPerPage}
-                    onPageChange={(_, newPage) => setPage(newPage)}
-                    onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-                    onEditClick={handleEditClick}
-                    onDeleteClick={handleDeleteClick}
-                />
+                {/* Loading state */}
+                {isLoading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <CircularProgress size={36} />
+                    </div>
+                ) : (
+                    <CategoryTable
+                        filteredCategories={filteredCategories}
+                        page={page}
+                        rowsPerPage={rowsPerPage}
+                        onPageChange={(_, newPage) => setPage(newPage)}
+                        onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
+                        onEditClick={handleEditClick}
+                        onDeleteClick={handleDeleteClick}
+                    />
+                )}
             </div>
 
             {/* Add Category Dialog */}
@@ -238,6 +203,7 @@ export default function CategoryPage() {
                     <Button
                         onClick={handleDeleteConfirm}
                         variant="contained"
+                        disabled={deleteCategory.isPending}
                         sx={{ textTransform: 'none', background: '#f43f5e', '&:hover': { background: '#e11d48' }, fontWeight: 700 }}
                     >
                         Yes, Delete

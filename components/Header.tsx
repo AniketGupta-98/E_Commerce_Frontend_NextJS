@@ -8,6 +8,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from 'react-redux';
 import { currentUser, clearAccessToken } from '../lib/features/Auth/authSlice';
+import { primaryColor, surface, header } from '@/lib/theme';
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -29,8 +30,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
             position="sticky"
             elevation={0}
             color="transparent"
-            sx={{ backgroundColor: 'white' }}
-            className="bg-white border-b border-slate-200 z-10"
+            sx={{ backgroundColor: surface.headerBg, borderBottom: '1px solid #e2e8f0', minHeight: header.height }}
+            className="z-10"
         >
             <Toolbar className="flex justify-between items-center h-16 min-h-[64px] px-6 mui-toolbar-override">
                 <div className="flex items-center">
@@ -56,7 +57,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 </div>
 
                 <div className="flex items-center gap-5 ml-auto">
-                    <IconButton size="small" className="text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-colors">
+                    <IconButton size="small" sx={{ color: 'text.secondary', '&:hover': { color: primaryColor[600], backgroundColor: primaryColor[50] } }}>
                         <NotificationsNoneIcon />
                     </IconButton>
 
@@ -65,9 +66,9 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     <div className="flex items-center gap-3 group cursor-pointer">
                         <div className="text-right hidden sm:block">
                             <p className="text-sm font-semibold text-slate-800 leading-none mb-1">Store Admin</p>
-                            <p className="text-xs text-slate-500 leading-none group-hover:text-indigo-600 transition-colors">Manage Account</p>
+                            <p className="text-xs leading-none transition-colors" style={{ color: primaryColor[600] }}>Manage Account</p>
                         </div>
-                        <Avatar alt="Admin" className="w-9 h-9 border-2 border-transparent group-hover:border-indigo-100 transition-all font-semibold bg-indigo-600 text-sm">A</Avatar>
+                        <Avatar alt="Admin" sx={{ width: 36, height: 36, backgroundColor: primaryColor[600], fontSize: '0.875rem', fontWeight: 600 }}>A</Avatar>
                     </div>
 
                     <Button

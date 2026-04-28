@@ -1,4 +1,5 @@
 import React from 'react';
+import { muiSx, categoryColors as themeColors } from '@/lib/theme';
 import { EditOutlined, DeleteOutline, CategoryOutlined } from '@mui/icons-material';
 import {
     Button,
@@ -22,16 +23,7 @@ interface CategoryTableProps {
     onDeleteClick: (category: any) => void;
 }
 
-const categoryIconColors = [
-    'bg-indigo-500',
-    'bg-violet-500',
-    'bg-sky-500',
-    'bg-emerald-500',
-    'bg-amber-500',
-    'bg-rose-500',
-    'bg-teal-500',
-    'bg-orange-500',
-];
+const categoryIconColors = [...themeColors];
 
 export default function CategoryTable({
     filteredCategories,
@@ -114,14 +106,7 @@ export default function CategoryTable({
                                             variant="outlined"
                                             startIcon={<EditOutlined fontSize="small" />}
                                             onClick={(e) => { e.stopPropagation(); onEditClick(cat); }}
-                                            sx={{
-                                                borderColor: '#6366f1',
-                                                color: '#6366f1',
-                                                textTransform: 'none',
-                                                fontWeight: 600,
-                                                fontSize: '0.75rem',
-                                                '&:hover': { background: '#eef2ff', borderColor: '#4f46e5' },
-                                            }}
+                                            sx={muiSx.primaryOutlinedButton}
                                         >
                                             Edit
                                         </Button>
@@ -134,14 +119,7 @@ export default function CategoryTable({
                                             variant="outlined"
                                             startIcon={<DeleteOutline fontSize="small" />}
                                             onClick={(e) => { e.stopPropagation(); onDeleteClick(cat); }}
-                                            sx={{
-                                                borderColor: '#f43f5e',
-                                                color: '#f43f5e',
-                                                textTransform: 'none',
-                                                fontWeight: 600,
-                                                fontSize: '0.75rem',
-                                                '&:hover': { background: '#fff1f2', borderColor: '#e11d48' },
-                                            }}
+                                            sx={muiSx.dangerOutlinedButton}
                                         >
                                             Delete
                                         </Button>

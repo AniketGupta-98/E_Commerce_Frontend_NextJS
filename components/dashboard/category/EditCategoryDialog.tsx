@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { primaryColor, muiSx } from '@/lib/theme';
 import { Close, EditOutlined } from '@mui/icons-material';
 import {
     IconButton,
@@ -38,8 +39,8 @@ export default function EditCategoryDialog({
             {/* Header */}
             <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center">
-                        <EditOutlined fontSize="small" sx={{ color: '#6366f1' }} />
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: primaryColor[50] }}>
+                        <EditOutlined fontSize="small" sx={{ color: primaryColor[500] }} />
                     </div>
                     <DialogTitle className="p-0 text-xl font-bold text-slate-800 tracking-tight">
                         Edit Category
@@ -95,16 +96,7 @@ export default function EditCategoryDialog({
                     variant="contained"
                     disabled={!selectedCategory?.name?.trim() && !selectedCategory?.categoryName?.trim()}
                     disableElevation
-                    sx={{
-                        background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                        '&:hover': { background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)' },
-                        '&:disabled': { opacity: 0.5, background: '#a5b4fc' },
-                        textTransform: 'none',
-                        fontWeight: 600,
-                        borderRadius: '10px',
-                        px: 3,
-                        py: 1,
-                    }}
+                    sx={{ ...muiSx.primaryContainedButton, px: 3, py: 1 }}
                 >
                     Save Changes
                 </Button>

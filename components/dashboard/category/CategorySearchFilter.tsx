@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from '@mui/icons-material';
+import { primaryColor } from '@/lib/theme';
 
 interface CategorySearchFilterProps {
     searchQuery: string;
@@ -21,7 +22,19 @@ export default function CategorySearchFilter({
                     type="text"
                     value={searchQuery}
                     onChange={onSearchChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white focus:border-indigo-500 sm:text-sm transition-all"
+                    className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-lg leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white sm:text-sm transition-all"
+                    style={{
+                        // Dynamic focus styles via CSS custom property — driven by theme
+                        '--tw-ring-color': primaryColor[500],
+                    } as React.CSSProperties}
+                    onFocus={e => {
+                        e.currentTarget.style.borderColor = primaryColor[500];
+                        e.currentTarget.style.boxShadow  = `0 0 0 2px ${primaryColor[50]}`;
+                    }}
+                    onBlur={e => {
+                        e.currentTarget.style.borderColor = '';
+                        e.currentTarget.style.boxShadow  = '';
+                    }}
                     placeholder="Search by category name or description..."
                 />
             </div>

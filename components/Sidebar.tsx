@@ -8,8 +8,9 @@ import {
     ListItemText, Toolbar,
 } from "@mui/material";
 import { Dashboard, ShoppingCart, Inventory, People, Storefront, AddBox } from "@mui/icons-material";
+import { primaryColor, neutralColor, surface, sidebar } from "@/lib/theme";
 
-const drawerWidth = 260;
+const drawerWidth = sidebar.width;
 
 const menuItems = [
     { label: "Dashboard", href: "/dashboard", icon: <Dashboard fontSize="small" /> },
@@ -42,16 +43,16 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 [`& .MuiDrawer-paper`]: {
                     width: drawerWidth,
                     boxSizing: "border-box",
-                    borderRight: "1px solid #e2e8f0",
-                    backgroundColor: "#ffffff",
+                    borderRight: `1px solid ${neutralColor[200]}`,
+                    backgroundColor: surface.sidebarBg,
                 },
             }}
         >
             <Toolbar className="border-b border-slate-100 flex items-center gap-3 px-6 h-16 min-h-[64px] mui-toolbar-override">
-                <div className="bg-indigo-600 text-white p-1.5 rounded-lg flex items-center justify-center shadow-sm">
+                <div className="text-white p-1.5 rounded-lg flex items-center justify-center shadow-sm" style={{ backgroundColor: primaryColor[600] }}>
                     <Storefront fontSize="small" />
                 </div>
-                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-blue-600 tracking-tight">AdminPortal</span>
+                <span className="text-xl font-bold bg-clip-text text-transparent tracking-tight" style={{ backgroundImage: `linear-gradient(to right, ${primaryColor[700]}, #2563eb)` }}>AdminPortal</span>
             </Toolbar>
 
             <List className="px-3 pt-6 flex flex-col gap-1.5">
@@ -62,17 +63,16 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                             <ListItemButton
                                 component={Link}
                                 href={item.href}
-                                className={`rounded-xl py-2.5 px-4 transition-all duration-200 ${
-                                    active 
-                                    ? "bg-indigo-50 text-indigo-700 font-semibold" 
-                                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                                }`}
+                                className="rounded-xl py-2.5 px-4 transition-all duration-200"
                                 sx={{
+                                    color:           active ? primaryColor[700] : neutralColor[600],
+                                    fontWeight:      active ? 600 : 500,
+                                    backgroundColor: active ? primaryColor[50]  : 'transparent',
                                     "&.Mui-focusVisible": { backgroundColor: "transparent" },
-                                    "&.MuiListItemButton-root:hover": { backgroundColor: active ? "#eef2ff" : "#f8fafc" }
+                                    "&:hover": { backgroundColor: active ? primaryColor[50] : neutralColor[50], color: active ? primaryColor[700] : neutralColor[900] },
                                 }}
                             >
-                                <div className={`flex items-center justify-center mr-3 ${active ? "text-indigo-600" : "text-slate-400"}`}>
+                                <div className="flex items-center justify-center mr-3" style={{ color: active ? primaryColor[600] : neutralColor[400] }}>
                                     {item.icon}
                                 </div>
                                 <ListItemText 

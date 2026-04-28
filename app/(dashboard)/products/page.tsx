@@ -1,22 +1,9 @@
 "use client"
 
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Search, FilterList, MoreVert, Add, TrendingUp, Inventory, WarningAmber, ShoppingCartCheckout } from '@mui/icons-material';
-import { IconButton, Button, Box } from '@mui/material';
-import { useAppSelector } from "@/lib/useAppselector";
-import allUrl from "../../url.config.json"
-import axios from "axios";
-const url = allUrl.url
-
-const productsData = [
-    { id: 'PRD-101', name: 'Wireless Ergonomic Keyboard', category: 'Electronics', price: '$129.99', stock: 45, status: 'In Stock', image: '⌨️', trend: '+12%' },
-    { id: 'PRD-102', name: 'Ultra HD 4K Monitor, 32-inch', category: 'Computing', price: '$499.00', stock: 12, status: 'Low Stock', image: '🖥️', trend: '+5%' },
-    { id: 'PRD-103', name: 'Noise Cancelling Headphones', category: 'Audio', price: '$249.50', stock: 0, status: 'Out of Stock', image: '🎧', trend: '-2%' },
-    { id: 'PRD-104', name: 'Leather Smart Wallet', category: 'Accessories', price: '$59.90', stock: 120, status: 'In Stock', image: '👝', trend: '+24%' },
-    { id: 'PRD-105', name: 'Fitness Smartwatch Pro', category: 'Wearables', price: '$199.00', stock: 3, status: 'Low Stock', image: '⌚', trend: '+18%' },
-    { id: 'PRD-106', name: 'Portable SSD 2TB', category: 'Storage', price: '$159.99', stock: 85, status: 'In Stock', image: '💽', trend: '+3%' },
-];
+import { IconButton, Button, Box, CircularProgress } from '@mui/material';
+import { useProducts } from '@/lib/hooks/useProducts';
 
 const getStockStyle = (status: string) => {
     switch (status) {
@@ -47,62 +34,16 @@ const StatCard = ({ title, value, icon, trend, subtext, colorClass }: any) => (
         {subtext && <p className="text-xs text-slate-400 mt-3 border-t border-slate-100 pt-3">{subtext}</p>}
     </div>
 );
-export interface Category {
-  _id: string;
-  name: string;
-}
-
-export interface Product {
-    _id: string;
-    productId: string;
-    title: string;
-    description: string;
-    status: string;
-    price: number;
-    stock: number;
-    category: Category;
-    images: string[];
-    brand: string;
-    ratings: number;
-    totalReviews: number;
-    isFeatured: boolean;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-}
 
 export default function ProductsPage() {
+    const { data: ProductList = [], isLoading } = useProducts();
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const user = useAppSelector((state) => state.user.user);
-
-    const headerConfig = { headers: { Authorization: user?.accessToken } };
-
-    const [ProductList, setProductList] = useState<Product[]>([]);
-
-    useEffect(() => {
-        getAllProductList();
-    }, [])
-
-    const getAllProductList = () => {
-        try {
-            axios
-                .get(url + "/productslist", headerConfig)
-                .then((res) => {
-                    // setusersData(res.data.user)
-                    const allList = res.data.data;
-                    setProductList(res.data.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        } catch {
-            // setError("Login failed. Please try again.");
-        } finally {
-            // setLoading(false);
-        }
-    }
-
+    const filteredProducts = ProductList.filter((p) =>
+        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.productId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <div className="flex flex-col gap-8 max-w-[1400px] mx-auto pb-8 animate-fade-in">
@@ -170,6 +111,8 @@ export default function ProductsPage() {
                         </div>
                         <input
                             type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="block w-full pl-12 pr-4 py-2.5 border border-slate-200 hover:border-slate-300 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:bg-white focus:border-indigo-500 sm:text-sm transition-all"
                             placeholder="Find products by name, category, or SKU..."
                         />
@@ -184,6 +127,11 @@ export default function ProductsPage() {
                     </div>
                 </div>
 
+                {isLoading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <CircularProgress size={36} />
+                    </div>
+                ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[1000px]">
                         <thead>
@@ -198,7 +146,7 @@ export default function ProductsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100/80 text-sm">
-                            {ProductList.map((product, id) => (
+                            {filteredProducts.map((product, id) => (
                                 <tr key={id} className="hover:bg-indigo-50/30 transition-all duration-200 group cursor-pointer">
                                     <td className="py-4 pl-8">
                                         <div className="w-14 h-14 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-slate-200 group-hover:scale-110 transition-transform duration-300">
@@ -253,9 +201,10 @@ export default function ProductsPage() {
                         </tbody>
                     </table>
                 </div>
+                )}
 
                 <div className="p-5 border-t border-slate-100 flex items-center justify-between text-sm text-slate-500 bg-slate-50/50">
-                    <div className="font-medium">Showing <span className="font-bold text-slate-800">1</span> to <span className="font-bold text-slate-800">6</span> of <span className="font-bold text-slate-800">1,284</span> entries</div>
+                    <div className="font-medium">Showing <span className="font-bold text-slate-800">{filteredProducts.length}</span> of <span className="font-bold text-slate-800">{ProductList.length}</span> entries</div>
                     <div className="flex gap-2">
                         <button className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold hover:bg-slate-50 disabled:opacity-50 transition-colors shadow-sm text-xs tracking-wide" disabled>PREVIOUS</button>
                         <button className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-600 font-bold hover:bg-slate-50 transition-colors shadow-sm text-xs tracking-wide hover:shadow-md">NEXT</button>

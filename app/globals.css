@@ -1,17 +1,84 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   🎨  CENTRAL THEME  —  Edit ONLY this file to restyle the entire application.
+   ══════════════════════════════════════════════════════════════════════════════
+   All components import values from  lib/theme.ts  which simply wraps these
+   CSS custom properties with  var(--*)  strings.  Change a value here and the
+   whole app updates automatically — no hunting through component files.
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── 1. PRIMARY BRAND COLOR ──────────────────────────────────────────────── */
+  /* Swap every hex value here to change the brand colour globally.            */
+  --color-primary-50:  #eef2ff;   /* lightest tint  — badge bg, focus rings   */
+  --color-primary-100: #e0e7ff;   /* light tint     — disabled button bg       */
+  --color-primary-500: #6366f1;   /* base           — icon tint, button border  */
+  --color-primary-600: #4f46e5;   /* main           — primary button, logo, avatar */
+  --color-primary-700: #4338ca;   /* dark            — hover on primary button  */
+
+  /* ── 2. DANGER / DELETE COLOR ────────────────────────────────────────────── */
+  --color-danger-50:  #fff1f2;   /* hover background for delete button         */
+  --color-danger-500: #f43f5e;   /* border + text                              */
+  --color-danger-600: #e11d48;   /* hover border                               */
+
+  /* ── 3. NEUTRAL PALETTE ──────────────────────────────────────────────────── */
+  --color-neutral-50:  #f8fafc;  /* page bg, row hover bg                      */
+  --color-neutral-100: #f1f5f9;  /* search bar bg, icon button hover           */
+  --color-neutral-200: #e2e8f0;  /* dividers, borders                          */
+  --color-neutral-300: #cbd5e1;  /* muted icons, placeholder                   */
+  --color-neutral-400: #94a3b8;  /* secondary icons                            */
+  --color-neutral-500: #64748b;  /* muted text                                 */
+  --color-neutral-600: #475569;  /* body text                                  */
+  --color-neutral-800: #1e293b;  /* primary heading text                       */
+  --color-neutral-900: #0f172a;
+
+  /* ── 4. SURFACE / BACKGROUND ─────────────────────────────────────────────── */
+  --surface-body:    #f8fafc;   /* <body> background                            */
+  --surface-card:    #ffffff;   /* cards, dialogs, paper                        */
+  --surface-sidebar: #ffffff;   /* sidebar background                           */
+  --surface-header:  #ffffff;   /* top-bar background                           */
+
+  /* ── 5. LAYOUT DIMENSIONS ────────────────────────────────────────────────── */
+  --sidebar-width:  260px;
+  --header-height:  64px;
+
+  /* ── 6. BORDER RADIUS ────────────────────────────────────────────────────── */
+  --radius-sm:  8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* ── 7. SHADOWS ──────────────────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+
+  /* ── 8. PRIMARY GRADIENT ─────────────────────────────────────────────────── */
+  --gradient-primary:       linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+  --gradient-primary-hover: linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-700) 100%);
+  --gradient-primary-shadow: 0 4px 14px 0 rgb(99 102 241 / 0.30);
+}
+
+/* ── Tailwind v4 @theme block — aliases indigo → primary so Tailwind utility
+   classes (bg-indigo-600, text-indigo-700 …) all resolve through the vars above. */
 @theme {
-  --color-indigo-50:  #eef2ff;
-  --color-indigo-100: #e0e7ff;
-  --color-indigo-500: #6366f1;
-  --color-indigo-600: #4f46e5;
-  --color-indigo-700: #4338ca;
-  --color-primary: var(--color-indigo-600);
-  --color-primary-hover: var(--color-indigo-700);
+  --color-indigo-50:  var(--color-primary-50);
+  --color-indigo-100: var(--color-primary-100);
+  --color-indigo-500: var(--color-primary-500);
+  --color-indigo-600: var(--color-primary-600);
+  --color-indigo-700: var(--color-primary-700);
+
+  --color-primary:       var(--color-primary-600);
+  --color-primary-hover: var(--color-primary-700);
 }
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-800 antialiased;
+    background-color: var(--surface-body);
+    color: var(--color-neutral-800);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { primaryColor, primaryGradient, muiSx } from '@/lib/theme';
 import { AddCircleOutline } from '@mui/icons-material';
 import { Button } from '@mui/material';
 
@@ -16,7 +17,7 @@ export default function CategoryPageHeader({ totalCount, onAddClick }: CategoryP
                 </h2>
                 <p className="text-slate-500 text-sm">
                     Manage and organise your store&apos;s product categories.
-                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-100">
+                    <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border" style={{ backgroundColor: primaryColor[50], color: primaryColor[700], borderColor: primaryColor[100] }}>
                         {totalCount} total
                     </span>
                 </p>
@@ -28,15 +29,11 @@ export default function CategoryPageHeader({ totalCount, onAddClick }: CategoryP
                 startIcon={<AddCircleOutline fontSize="small" />}
                 disableElevation
                 sx={{
-                    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                    '&:hover': { background: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)' },
-                    textTransform: 'none',
-                    fontWeight: 600,
-                    borderRadius: '10px',
+                    ...muiSx.primaryContainedButton,
                     px: 3,
                     py: 1.1,
                     fontSize: '0.875rem',
-                    boxShadow: '0 4px 14px 0 rgba(99,102,241,0.3)',
+                    boxShadow: primaryGradient.shadow,
                 }}
             >
                 Add Category
