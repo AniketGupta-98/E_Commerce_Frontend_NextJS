@@ -103,15 +103,15 @@ export default function UsersPage() {
             }
 
             axios
-                .put(`${url}/admin/userupdate`, body, headerConfig)
+                .put(url + `/admin/userupdate`, body, headerConfig)
                 .then(() => {
                     userList();
-                    setSnackbar({ open: true, message: `${userToDelete.Fname} ${userToDelete.Lname} deleted successfully.`, severity: 'success' });
+                    setSnackbar({ open: true, message: `User Updated successfully.`, severity: 'success' });
                     setEditUserOpen(false);
 
                 })
-                .catch(() => {
-                    setSnackbar({ open: true, message: 'Failed to delete user. Please try again.', severity: 'error' });
+                .catch((error) => {
+                    setSnackbar({ open: true, message: 'Failed to update user. Please try again.', severity: 'error' });
                     setUserToDelete(null);
                 });
         } catch { /* silent */ }

@@ -16,6 +16,9 @@ const menuItems = [
     { label: "Orders", href: "/orders", icon: <ShoppingCart fontSize="small" /> },
     { label: "Products", href: "/products", icon: <Inventory fontSize="small" /> },
     { label: "Add Product", href: "/products/add", icon: <AddBox fontSize="small" /> },
+    { label: "Category", href: "/category", icon: <AddBox fontSize="small" /> },
+
+    
     { label: "Users", href: "/users", icon: <People fontSize="small" /> },
 ];
 
