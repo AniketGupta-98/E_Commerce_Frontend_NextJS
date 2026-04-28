@@ -1,7 +1,6 @@
 import React from 'react';
-import { MoreVert } from '@mui/icons-material';
+import { EditOutlined, DeleteOutline } from '@mui/icons-material';
 import {
-    IconButton,
     Button,
     Table,
     TableBody,
@@ -21,6 +20,7 @@ interface UserTableProps {
     onPageChange: (event: unknown, newPage: number) => void;
     onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onEditClick: (user: any) => void;
+    onDeleteClick: (user: any) => void;
 }
 
 export default function UserTable({
@@ -30,6 +30,7 @@ export default function UserTable({
     onPageChange,
     onRowsPerPageChange,
     onEditClick,
+    onDeleteClick,
 }: UserTableProps) {
     const visibleRows = rowsPerPage > 0
         ? filteredUsers?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -45,7 +46,8 @@ export default function UserTable({
                             <TableCell className="p-4 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">System Role</TableCell>
                             <TableCell className="p-4 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Reg. Date</TableCell>
                             <TableCell className="p-4 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Account Status</TableCell>
-                            <TableCell className="p-4 text-right pr-6 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Actions</TableCell>
+                            <TableCell className="p-4 text-center text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Edit</TableCell>
+                            <TableCell className="p-4 text-center pr-6 text-xs uppercase tracking-wider text-slate-500 font-semibold border-b-0">Delete</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody className="divide-y divide-slate-100 text-sm">
@@ -90,23 +92,44 @@ export default function UserTable({
                                     </span>
                                 </TableCell>
 
-                                {/* Actions */}
-                                <TableCell className="p-4 text-right pr-6 border-b-0">
+                                {/* Edit Column */}
+                                <TableCell className="p-4 text-center border-b-0">
                                     <Button
                                         size="small"
-                                        variant="text"
+                                        variant="outlined"
+                                        startIcon={<EditOutlined fontSize="small" />}
                                         onClick={(e) => { e.stopPropagation(); onEditClick(user); }}
-                                        className="text-indigo-600 font-semibold hover:bg-indigo-50 normal-case opacity-0 group-hover:opacity-100 transition-opacity mr-2"
+                                        sx={{
+                                            borderColor: '#6366f1',
+                                            color: '#6366f1',
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            fontSize: '0.75rem',
+                                            '&:hover': { background: '#eef2ff', borderColor: '#4f46e5' },
+                                        }}
                                     >
                                         Manage
                                     </Button>
-                                    <IconButton
-                                        onClick={(e) => { e.stopPropagation(); onEditClick(user); }}
+                                </TableCell>
+
+                                {/* Delete Column */}
+                                <TableCell className="p-4 text-center pr-6 border-b-0">
+                                    <Button
                                         size="small"
-                                        className="text-slate-400 hover:text-slate-600"
+                                        variant="outlined"
+                                        startIcon={<DeleteOutline fontSize="small" />}
+                                        onClick={(e) => { e.stopPropagation(); onDeleteClick(user); }}
+                                        sx={{
+                                            borderColor: '#f43f5e',
+                                            color: '#f43f5e',
+                                            textTransform: 'none',
+                                            fontWeight: 600,
+                                            fontSize: '0.75rem',
+                                            '&:hover': { background: '#fff1f2', borderColor: '#e11d48' },
+                                        }}
                                     >
-                                        <MoreVert fontSize="small" />
-                                    </IconButton>
+                                        Delete
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -10,6 +10,11 @@ import UserSearchFilter from '@/components/dashboard/users/UserSearchFilter';
 import UserTable from '@/components/dashboard/users/UserTable';
 import EditUserDialog from '@/components/dashboard/users/EditUserDialog';
 import InviteUserDialog from '@/components/dashboard/users/InviteUserDialog';
+import {
+    Dialog, DialogTitle, DialogContent, DialogContentText,
+    DialogActions, Button, Snackbar, Alert,
+} from '@mui/material';
+import { WarningAmberRounded } from '@mui/icons-material';
 
 const url = allUrl.url;
 
@@ -82,7 +87,69 @@ export default function UsersPage() {
 
     const handleEditClick = (u: any) => { setSelectedUser({ ...u }); setEditUserOpen(true); };
     const handleEditClose = () => { setEditUserOpen(false); setSelectedUser(null); };
-    const handleEditSave = () => { console.log('Saving user:', selectedUser); setEditUserOpen(false); };
+
+
+    const handleEditSave = () => {
+
+        try {
+
+            const body = {
+                Fname: selectedUser.Fname,
+                Lname: selectedUser.Lname,
+                email: selectedUser.email,
+                isActive: selectedUser.isActive,
+                userId: selectedUser.userId,
+                role: selectedUser.role
+            }
+
+            axios
+                .put(`${url}/admin/userupdate`, body, headerConfig)
+                .then(() => {
+                    userList();
+                    setSnackbar({ open: true, message: `${userToDelete.Fname} ${userToDelete.Lname} deleted successfully.`, severity: 'success' });
+                    setEditUserOpen(false);
+
+                })
+                .catch(() => {
+                    setSnackbar({ open: true, message: 'Failed to delete user. Please try again.', severity: 'error' });
+                    setUserToDelete(null);
+                });
+        } catch { /* silent */ }
+    };
+
+    // ── Delete User ──────────────────────────────────────────────────────────
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<any>(null);
+    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({
+        open: false, message: '', severity: 'success',
+    });
+
+    const handleDeleteClick = (u: any) => {
+        setUserToDelete(u);
+        setDeleteConfirmOpen(true);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteConfirmOpen(false);
+        setUserToDelete(null);
+    };
+
+    const handleDeleteConfirm = () => {
+        setDeleteConfirmOpen(false);
+        try {
+            axios
+                .delete(`${url}/admin/deleteuser/${userToDelete.userId}/${userToDelete.email}`, headerConfig)
+                .then(() => {
+                    userList();
+                    setSnackbar({ open: true, message: `${userToDelete.Fname} ${userToDelete.Lname} deleted successfully.`, severity: 'success' });
+                    setUserToDelete(null);
+                })
+                .catch(() => {
+                    setSnackbar({ open: true, message: 'Failed to delete user. Please try again.', severity: 'error' });
+                    setUserToDelete(null);
+                });
+        } catch { /* silent */ }
+    };
 
     // ── Invite Dialog ────────────────────────────────────────────────────────
     const [inviteUserOpen, setInviteUserOpen] = useState(false);
@@ -96,12 +163,22 @@ export default function UsersPage() {
     };
 
     const handleInviteSubmit = () => {
-        console.log('Inviting user:', inviteData);
         try {
             axios
                 .post(url + '/admin/usercreate', inviteData, headerConfig)
-                .then((res) => { setInviteUserOpen(false); userList(); })
-                .catch((error) => console.log(error));
+                .then((res) => {
+
+                    console.log("res", res)
+
+
+                    setInviteUserOpen(false); userList();
+                })
+                .catch((error) => {
+                    if (error.status == 409) {
+                        setSnackbar({ open: true, message: `Email Already exist`, severity: 'error' });
+                    }
+                }
+                );
         } catch { /* silent */ }
     };
 
@@ -134,6 +211,7 @@ export default function UsersPage() {
                     onPageChange={(_, newPage) => setPage(newPage)}
                     onRowsPerPageChange={(e) => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
                     onEditClick={handleEditClick}
+                    onDeleteClick={handleDeleteClick}
                 />
             </div>
 
@@ -156,6 +234,45 @@ export default function UsersPage() {
                 onInviteDataChange={setInviteData}
                 onTogglePassword={() => setShowPassword((v) => !v)}
             />
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={deleteConfirmOpen} onClose={handleDeleteCancel} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#e11d48', fontWeight: 700 }}>
+                    <WarningAmberRounded sx={{ color: '#f43f5e' }} />
+                    Confirm Deletion
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete{' '}
+                        <strong>{userToDelete ? `${userToDelete.Fname} ${userToDelete.Lname}` : 'this user'}</strong>?
+                        This action <strong>cannot be undone</strong>.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+                    <Button onClick={handleDeleteCancel} variant="outlined" sx={{ textTransform: 'none', borderColor: '#cbd5e1', color: '#475569', '&:hover': { background: '#f8fafc' } }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleDeleteConfirm} variant="contained" sx={{ textTransform: 'none', background: '#f43f5e', '&:hover': { background: '#e11d48' }, fontWeight: 700 }}>
+                        Yes, Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Result Snackbar */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={4000}
+                onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert
+                    onClose={() => setSnackbar((s) => ({ ...s, open: false }))}
+                    severity={snackbar.severity}
+                    variant="filled"
+                    sx={{ width: '100%', borderRadius: 2, fontWeight: 600 }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

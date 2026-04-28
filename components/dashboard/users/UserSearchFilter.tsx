@@ -56,9 +56,8 @@ export default function UserSearchFilter({
                 </Button>
                 <Menu anchorEl={roleAnchorEl} open={Boolean(roleAnchorEl)} onClose={() => onRoleClose()}>
                     <MenuItem onClick={() => onRoleClose('All')}>All Roles</MenuItem>
-                    <MenuItem onClick={() => onRoleClose('Admin')}>Admin</MenuItem>
-                    <MenuItem onClick={() => onRoleClose('Manager')}>Manager</MenuItem>
-                    <MenuItem onClick={() => onRoleClose('User')}>User</MenuItem>
+                    <MenuItem onClick={() => onRoleClose('ADMIN')}>Admin</MenuItem>
+                    <MenuItem onClick={() => onRoleClose('USER')}>User</MenuItem>
                 </Menu>
 
                 {/* Status Filter */}
