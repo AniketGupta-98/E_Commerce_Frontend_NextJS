@@ -14,10 +14,11 @@ export function useCategories() {
     return useQuery({
         queryKey: CATEGORIES_KEY,
         queryFn: fetchCategories,
+        staleTime: 5 * 60 * 1000,   // 5 min — categories change rarely
+        gcTime: 10 * 60 * 1000,     // keep in cache for 10 min after unmount
     });
 }
 
-/** Create a new category — auto-invalidates the list on success */
 export function useCreateCategory() {
     const qc = useQueryClient();
     return useMutation({

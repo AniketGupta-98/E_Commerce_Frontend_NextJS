@@ -55,6 +55,7 @@ export default function CategoryPage() {
     const handleAddClick = () => { setAddData(EMPTY_ADD); setAddOpen(true); };
 
     const handleAddSubmit = () => {
+
         createCategory.mutate(addData, {
             onSuccess: () => {
                 setAddOpen(false);
@@ -77,7 +78,8 @@ export default function CategoryPage() {
     const handleEditClose = () => { setEditOpen(false); setSelectedCategory(null); };
 
     const handleEditSave = () => {
-        const id = selectedCategory.categoryId ?? selectedCategory.id ?? selectedCategory._id;
+
+        const id = selectedCategory.categoryId;
         const payload = {
             name: selectedCategory.name ?? selectedCategory.categoryName,
             description: selectedCategory.description,

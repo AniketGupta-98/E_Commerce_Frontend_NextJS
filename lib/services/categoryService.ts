@@ -26,7 +26,7 @@ export async function fetchCategories(): Promise<Category[]> {
 }
 
 export async function createCategory(payload: CreateCategoryPayload): Promise<void> {
-    await api.post('/category', payload);
+    await api.post('/add/category', payload);
 }
 
 export async function updateCategory(id: string, payload: UpdateCategoryPayload): Promise<void> {

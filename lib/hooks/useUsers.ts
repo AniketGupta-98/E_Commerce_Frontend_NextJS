@@ -15,6 +15,8 @@ export function useUsers() {
     return useQuery({
         queryKey: USERS_KEY,
         queryFn: fetchUsers,
+        staleTime: 1 * 60 * 1000,   // 1 min — user data is admin-sensitive
+        gcTime: 3 * 60 * 1000,      // keep in cache for 3 min after unmount
     });
 }
 

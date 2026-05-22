@@ -165,7 +165,7 @@ export default function ProductsPage() {
                                         </div>
                                     </td>
                                     <td className="py-4 px-4">
-                                        <span className="text-slate-600 font-medium text-sm">{product.category.name}</span>
+                                        <span className="text-slate-600 font-medium text-sm">{product?.category?.name}</span>
                                     </td>
                                     <td className="py-4 px-4 font-bold text-slate-900 text-[15px]">{product.price}</td>
                                     <td className="py-4 px-4 text-center">
